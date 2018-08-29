@@ -4,10 +4,6 @@ pipelines:
   branches:
     development:
       - step:
-          services:
-            - docker
-          caches:
-            - docker
           script:
             # Install bash & docker-compose
             - apk add --no-cache py-pip bash
@@ -15,9 +11,11 @@ pipelines:
             - docker-compose -v
             # Build docker test image
             - docker-compose build --build-arg BUNDLE_WITHOUT=production --build-arg RAILS_ENV=test
-            # Run container
-            - docker-compose up -d
             # Code analysis
-            - docker-compose exec app rubocop
+            - docker-compose run app rubocop -d
             # Unit testing
-            - docker-compose exec app rspec
+            - docker-compose run app rspec -v="$BITBUCKET_CLONE_DIR:/app" -d
+          services:
+            - docker
+          caches:
+            - docker
