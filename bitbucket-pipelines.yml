@@ -10,11 +10,13 @@ pipelines:
             - pip install --no-cache-dir docker-compose
             - docker-compose -v
             # Build docker test image
-            - docker-compose build --build-arg BUNDLE_WITHOUT=production --build-arg RAILS_ENV=test
+            - docker-compose build --build-arg RAILS_ENV=test
+            # Prepare DB image
+            - docker-compose run db -v="$BITBUCKET_CLONE_DIR:/var/lib/postgresql/data"
             # Code analysis
-            - docker-compose run app rubocop -d
+            - docker-compose run app rubocop
             # Unit testing
-            - docker-compose run app rspec -v="$BITBUCKET_CLONE_DIR:/app" -d
+            - docker-compose run app rspec
           services:
             - docker
           caches:
