@@ -11,6 +11,8 @@ pipelines:
             - docker-compose -v
             # Build docker test image
             - docker-compose build --build-arg RAILS_ENV=test
+            - $BITBUCKET_CLONE_DIR
+            - ls -la $BITBUCKET_CLONE_DIR
             # Prepare DB image
             - docker-compose run db -v="$BITBUCKET_CLONE_DIR:/var/lib/postgresql/data"
             # Code analysis
