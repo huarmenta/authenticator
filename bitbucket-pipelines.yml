@@ -1,0 +1,23 @@
+image: docker:stable
+
+pipelines:
+  branches:
+    development:
+      - step:
+          services:
+            - docker
+          caches:
+            - docker
+          script:
+            # Install bash & docker-compose
+            - apk add --no-cache py-pip bash
+            - pip install --no-cache-dir docker-compose
+            - docker-compose -v
+            # Build docker test image
+            - docker-compose build --build-arg BUNDLE_WITHOUT=production --build-arg RAILS_ENV=test
+            # Run container
+            - docker-compose up -d
+            # Code analysis
+            - docker-compose exec app rubocop
+            # Unit testing
+            - docker-compose exec app rspec
