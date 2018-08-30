@@ -12,7 +12,7 @@ set -e
 : "${APP_SETUP_LOCK:="$APP_TEMP_PATH/setup.lock"}"
 : "${APP_SETUP_WAIT:="5"}"
 
-chown -R $USER:$USER $APP_PATH
+chown -R condovive:condovive $APP_PATH
 
 # 1: Define the functions lock and unlock our app containers setup processes:
 lock_setup() { mkdir -p "$APP_TEMP_PATH" && touch "$APP_SETUP_LOCK"; }
