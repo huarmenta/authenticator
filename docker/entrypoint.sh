@@ -7,7 +7,7 @@
 # setup the app containers and databases upon runnning.
 set -e
 
-: "${APP_PATH:=$PWD/spec/dummy/}"
+: "${APP_PATH:=$PWD/spec/dummy}"
 : "${APP_TEMP_PATH:="$APP_PATH/tmp"}"
 : "${APP_SETUP_LOCK:="$APP_TEMP_PATH/setup.lock"}"
 : "${APP_SETUP_WAIT:="5"}"
