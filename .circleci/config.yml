@@ -11,14 +11,14 @@ jobs:
       # - setup_remote_docker
       - run:
           name: Build project
-          command: docker-compose build --build-arg RAILS_ENV=test
+          command: docker-compose up --build
       - run:
           name: Code analysis with Rubocop
-          command: docker-compose run app rubocop
+          command: docker-compose exec app rubocop
       - run:
           name: Unit testing with RSpec
           command: |
-            docker-compose run app \
+            docker-compose exec app \
             rspec --profile 10 \
                   --format RspecJunitFormatter \
                   --out test_results/rspec.xml \
