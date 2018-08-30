@@ -4,26 +4,27 @@ jobs:
     branches:
       only:
         - development
-    machine: true
+    docker:
+      - image: docker/compose:1.22.0
     working_directory: ~/app
     steps:
       - checkout # special step to check out source code to working directory
-      # - setup_remote_docker
+      - setup_remote_docker
       - run:
           name: Build project
           command: docker-compose up --build -d
-      - run:
-          name: Code analysis with Rubocop
-          command: docker-compose run app rubocop
-      - run:
-          name: Unit testing with RSpec
-          command: |
-            docker-compose run app \
-            rspec --profile 10 \
-                  --format RspecJunitFormatter \
-                  --out test_results/rspec.xml \
-                  --format progress \
-                  $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
-      # Save test results for timing analysis
-      - store_test_results:
-          path: test_results
+      # - run:
+      #     name: Code analysis with Rubocop
+      #     command: docker-compose run app rubocop
+      # - run:
+      #     name: Unit testing with RSpec
+      #     command: |
+      #       docker-compose run app \
+      #       rspec --profile 10 \
+      #             --format RspecJunitFormatter \
+      #             --out test_results/rspec.xml \
+      #             --format progress \
+      #             $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+      # # Save test results for timing analysis
+      # - store_test_results:
+      #     path: test_results
