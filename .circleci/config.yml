@@ -14,11 +14,11 @@ jobs:
           command: docker-compose up --build -d
       - run:
           name: Code analysis with Rubocop
-          command: docker-compose exec app rubocop
+          command: docker-compose run app rubocop
       - run:
           name: Unit testing with RSpec
           command: |
-            docker-compose exec app \
+            docker-compose run app \
             rspec --profile 10 \
                   --format RspecJunitFormatter \
                   --out test_results/rspec.xml \
