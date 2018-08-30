@@ -11,7 +11,7 @@ jobs:
       # - setup_remote_docker
       - run:
           name: Build project
-          command: docker-compose up --build
+          command: docker-compose up --build -d
       - run:
           name: Code analysis with Rubocop
           command: docker-compose exec app rubocop
