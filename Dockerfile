@@ -9,7 +9,7 @@ ADD Gemfile* *.gemspec /app/
 ARG BUNDLE_WITHOUT=test:development
 ENV BUNDLE_WITHOUT ${BUNDLE_WITHOUT}
 
-RUN apk add --update --virtual .build-deps \
+RUN apk add --no-cache \
     build-base \
     git \
     postgresql-dev \
@@ -20,8 +20,7 @@ RUN apk add --update --virtual .build-deps \
     # Remove unneeded files (cached *.gem, *.o, *.c)
     && rm -rf /usr/local/bundle/cache/*.gem \
     && find /usr/local/bundle/gems/ -name "*.c" -delete \
-    && find /usr/local/bundle/gems/ -name "*.o" -delete \
-    && apk del .build-deps
+    && find /usr/local/bundle/gems/ -name "*.o" -delete
 
 # Add the Rails app
 ADD . /app
@@ -31,7 +30,7 @@ FROM ruby:2.5.1-alpine
 # Metadata
 LABEL maintainer='Hugo Armenta <hugo@condovive.com>' \
       name='Authenticator' \
-      description='Authentication solution powered by JWT' \
+      description='JWT authentication solution for CondoVive' \
       version='4.0'
 
 # Add Alpine packages
@@ -59,4 +58,4 @@ EXPOSE 3000
 
 # ENTRYPOINT runs everytime a container is prepared, make sure you have your
 # dependencies already configured so entrypoint executes correclty.
-ENTRYPOINT ["docker/entrypoint.sh"]
+ENTRYPOINT ["./docker-entrypoint.sh"]

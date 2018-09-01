@@ -13,10 +13,8 @@ services:
     build:
       context: .
       args:
-        - BUNDLE_WITHOUT=
-        - RAILS_ENV=development
-    volumes:
-      - .:/app
+        - BUNDLE_WITHOUT=production
+        - RAILS_ENV=test
     depends_on:
       - db
     ports:
