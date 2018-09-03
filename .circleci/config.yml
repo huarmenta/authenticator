@@ -8,18 +8,39 @@ jobs:
       - image: docker/compose:1.22.0
     working_directory: ~/app
     environment:
+      RAILS_ENV: test
     steps:
       - checkout # special step to check out source code to working directory
-      - setup_remote_docker
+      - setup_remote_docker # configured to execute docker commands
+      # Docker layer caching workaround
+      - restore_cache:
+          keys:
+            - v1-docker-{{ .Branch }}
       - run:
-          name: Build docker image
+          name: Load Docker layers cache
+          command: |
+            set +o pipefail
+            docker load -i ~/docker-layers.tar | true
+      - run:
+          name: Build docker image & run containers
           command: |
             docker-compose -f docker-compose.test.yml up --build -d
+      - run:
+          name: Save Docker layers cache
+          command: |
+            DOCKER_IMAGES=$(docker images --format "{{.Repository}}" --filter=reference="authenticator_*")
+            DOCKER_LAYERS=$(for image in $DOCKER_IMAGES; do docker history $image -q | grep -v missing; done)
+            docker save -o ~/docker-layers.tar $DOCKER_LAYERS
+      - save_cache:
+          key: v1-docker-{{ .Branch }}-{{ epoch }}
+          paths:
+            - ~/docker-layers.tar
+      # Tests
       - run:
           name: Code analysis with Rubocop
           command: |
             docker-compose -f docker-compose.test.yml exec app rubocop
-      - run: mkdir -p test_results
+            docker-compose -f docker-compose.test.yml exec app env
       - run:
           name: Unit testing with RSpec
           command: |
@@ -30,8 +51,12 @@ jobs:
                     --format progress \
                     $(circleci tests glob "spec/**/*_spec.rb" | \
                       circleci tests split --split-by=timings)
+            # Save test results for timing analysis
+            mkdir -p test_results
             docker-compose -f docker-compose.test.yml exec app \
               cat test_results/rspec.xml > test_results/rspec.xml
-      # # Save test results for timing analysis
-      # - store_test_results:
-      #     path: test_results
+      - store_test_results:
+          path: test_results
+      # Artifacts
+      - store_artifacts:
+          path: test_results
