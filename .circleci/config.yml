@@ -9,6 +9,7 @@ jobs:
     working_directory: ~/app
     environment:
       RAILS_ENV: test
+      TEST_FILE: docker-compose.test.yml
     steps:
       - checkout # special step to check out source code to working directory
       - setup_remote_docker # configured to execute docker commands
@@ -22,14 +23,16 @@ jobs:
             set +o pipefail
             docker load -i ~/docker-layers.tar | true
       - run:
-          name: Build docker image & run containers
+          name: Build docker image
           command: |
-            docker-compose -f docker-compose.test.yml up --build -d
+            docker-compose -f $TEST_FILE -p $CIRCLE_PROJECT_REPONAME build
       - run:
           name: Save Docker layers cache
           command: |
-            DOCKER_IMAGES=$(docker images --format "{{.Repository}}" --filter=reference="authenticator_*")
-            DOCKER_LAYERS=$(for image in $DOCKER_IMAGES; do docker history $image -q | grep -v missing; done)
+            DOCKER_IMAGES=$(docker images --format "{{.Repository}}" \
+              --filter=reference="${CIRCLE_PROJECT_REPONAME}_*")
+            DOCKER_LAYERS=$(for image in $DOCKER_IMAGES; do docker history \
+              $image -q | grep -v missing; done)
             docker save -o ~/docker-layers.tar $DOCKER_LAYERS
       - save_cache:
           key: v1-docker-{{ .Branch }}-{{ epoch }}
@@ -37,23 +40,24 @@ jobs:
             - ~/docker-layers.tar
       # Tests
       - run:
+          name: Start docker containers
+          command: docker-compose -f $TEST_FILE up -d
+      - run:
           name: Code analysis with Rubocop
           command: |
-            docker-compose -f docker-compose.test.yml exec app rubocop
-            docker-compose -f docker-compose.test.yml exec app env
+            docker-compose -f $TEST_FILE exec app rubocop
       - run:
           name: Unit testing with RSpec
           command: |
-            docker-compose -f docker-compose.test.yml exec app \
+            docker-compose -f $TEST_FILE exec app \
               rspec --profile 10 \
                     --format RspecJunitFormatter \
                     --out test_results/rspec.xml \
                     --format progress \
                     $(circleci tests glob "spec/**/*_spec.rb" | \
                       circleci tests split --split-by=timings)
-            # Save test results for timing analysis
             mkdir -p test_results
-            docker-compose -f docker-compose.test.yml exec app \
+            docker-compose -f $TEST_FILE exec app \
               cat test_results/rspec.xml > test_results/rspec.xml
       - store_test_results:
           path: test_results
