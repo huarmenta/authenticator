@@ -25,9 +25,10 @@ jobs:
               -c /caches/${CIRCLE_PROJECT_REPONAME}.tar.gz | \
               docker load; docker images; fi
       - run:
-          name: Build docker image
+          name: Build docker image & run containers
           command: |
-            docker build --tag ${CIRCLE_PROJECT_REPONAME} .
+            docker-compose -f $TEST_FILE -p ${CIRCLE_PROJECT_REPONAME} \
+              up --build -d
       - run:
           name: Save Docker image layer cache
           command: |
@@ -45,7 +46,6 @@ jobs:
       # Tests
       - run:
           name: Start docker containers
-          command: docker-compose -f $TEST_FILE up -d
       - run:
           name: Code analysis with Rubocop
           command: |
