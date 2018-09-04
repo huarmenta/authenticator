@@ -37,7 +37,7 @@ jobs:
               grep -v 'Using cache' | \
               sed -e 's/[ >-]//g' > /tmp/layers.txt
             docker save $(cat /tmp/layers.txt) | \
-              gzip < /caches/${CIRCLE_PROJECT_REPONAME}.tar.gz
+              gzip > /caches/${CIRCLE_PROJECT_REPONAME}.tar.gz
       - save_cache:
           key: v1-docker-layers-{{ .Branch }}-{{ epoch }}
           paths:
