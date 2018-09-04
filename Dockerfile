@@ -9,10 +9,7 @@ ADD Gemfile* *.gemspec /app/
 ARG BUNDLE_WITHOUT=test:development
 ENV BUNDLE_WITHOUT ${BUNDLE_WITHOUT}
 
-RUN apk add --no-cache \
-    build-base \
-    git \
-    postgresql-dev \
+RUN apk add --no-cache build-base git postgresql-dev \
     # rails gems
     && bundle config --global frozen 1 \
     # Parallel donwload and install jobs 
