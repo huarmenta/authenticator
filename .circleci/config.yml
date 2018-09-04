@@ -45,8 +45,6 @@ jobs:
             - /caches/
       # Tests
       - run:
-          name: Start docker containers
-      - run:
           name: Code analysis with Rubocop
           command: |
             docker-compose -f $TEST_FILE exec app rubocop
