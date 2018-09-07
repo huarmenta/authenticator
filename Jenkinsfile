@@ -5,7 +5,7 @@ pipeline {
     stage('Build') {
       steps {
         echo 'Building docker image..'
-        docker-compose --project-name=${JOB_NAME} up --build -d
+        docker-compose up --build -d
       }
     }
     stage('Code analysis') {
