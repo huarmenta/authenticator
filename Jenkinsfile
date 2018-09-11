@@ -2,10 +2,10 @@ pipeline {
   agent any
 
   stages {
+    environment {
+      TEST_FILE = 'docker-compose.test.yml'
+    }
     stage('Build') {
-      environment {
-        TEST_FILE = 'docker-compose.test.yml'
-      }
       steps {
         echo 'Building docker image..'
         sh 'docker-compose -f ${TEST_FILE} build'
