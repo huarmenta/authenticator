@@ -24,17 +24,16 @@ pipeline {
     stage('RSpec') {
       steps {
         echo 'Running unit tests..'
-        sh 'docker-compose -${COMPOSE_TEST} run --rm app rspec'
+        sh 'docker-compose ${COMPOSE_TEST} run --rm app rspec'
       }
     }
     stage('Deploy to gemstash server') {
       when { branch 'master' }
       steps {
         echo 'Deploying....'
-        // build gem before deploy it to private gem server
-        sh 'docker-compose ${COMPOSE_TEST} run --rm app gem build ${JOB_NAME}'
-        // deploy built gem to private gem server
+        // build gem and deploy it to private gem server
         sh 'docker-compose ${COMPOSE_TEST} run --rm app \
+              gem build ${COMPOSE_PROJECT_NAME} && \
               gem push --key gemstash --host ${GEMSTASH_URL}/private \
               `ls -Art pkg/ | tail -n 1`' // find last built gem file
       }
