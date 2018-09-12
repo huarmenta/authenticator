@@ -24,7 +24,7 @@ pipeline {
     stage('RSpec') {
       steps {
         echo 'Running unit tests..'
-        sh 'docker-compose -${COMPOSE_TEST} exec app rspec
+        sh 'docker-compose -${COMPOSE_TEST} exec app rspec'
       }
     }
     stage('Deploy to gemstash server') {
