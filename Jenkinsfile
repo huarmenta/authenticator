@@ -1,44 +1,50 @@
 pipeline {
-  agent any
+  agent any // Run pipeline on any available agent
 
+  // Set global environment variables
   environment {
-    TEST_FILE = 'docker-compose.test.yml'
+    // docker compose base test arguments
+    COMPOSE_TEST = '--file docker-compose.test.yml --project-name ${JOB_NAME}'
   }
 
+  // Start pipeline stages
   stages {
-    stage('Build') {
+    stage('Build docker image') {
       steps {
         echo 'Building docker image..'
-        sh 'docker-compose -f ${TEST_FILE} build'
+        sh 'docker-compose ${COMPOSE_TEST} up --build --detach'
       }
     }
-    stage('Code analysis') {
+    stage('Rubocop') {
       steps {
         echo 'Running code analysis..'
-        sh 'docker-compose -f ${TEST_FILE} run --rm app rubocop'
+        sh 'docker-compose ${COMPOSE_TEST} exec app rubocop'
       }
     }
-    stage('Test') {
+    stage('RSpec') {
       steps {
         echo 'Running unit tests..'
-        sh 'docker-compose -f ${TEST_FILE} run --rm app \
-              rspec --profile 10 \
-                    --format RspecJunitFormatter \
-                    --out test_results/rspec.xml \
-                    --format progress'
+        sh 'docker-compose -${COMPOSE_TEST} exec app rspec
       }
     }
-    stage('Deploy') {
+    stage('Deploy to gemstash server') {
+      when { branch 'master' }
       steps {
         echo 'Deploying....'
+        // build gem before deploy it to private gem server
+        sh 'docker-compose ${COMPOSE_TEST} exec app gem build ${JOB_NAME}'
+        // deploy built gem to private gem server
+        sh 'docker-compose ${COMPOSE_TEST} exec app \
+              gem push --key gemstash --host ${GEMSTASH_URL}/private \
+              `ls -Art pkg/ | tail -n 1`' // find last built gem file
       }
     }
   }
 
   post {
     always {
-      // Clean Workspace & docker images
-      sh 'docker-compose -f ${TEST_FILE} down --volumes'
+      // remove docker containers & clean Jenkins workspace
+      sh 'docker-compose ${COMPOSE_TEST} down --volumes'
       sh 'docker system prune -f'
       cleanWs()
     }
