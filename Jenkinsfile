@@ -4,7 +4,7 @@ pipeline {
   // Set global environment variables
   environment {
     // docker compose base test arguments
-    COMPOSE_TEST = '--file docker-compose.yml --project-name ${JOB_NAME}'
+    COMPOSE_TEST = '--file docker-compose.test.yml --project-name ${JOB_NAME}'
   }
 
   // Start pipeline stages
