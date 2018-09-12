@@ -12,6 +12,7 @@ pipeline {
     stage('Build docker image') {
       steps {
         echo 'Building docker image..'
+        sh 'docker images && docker-compose ps'
         sh 'docker-compose -f ${TEST_FILE} -p ${JOB_NAME} build'
       }
     }
