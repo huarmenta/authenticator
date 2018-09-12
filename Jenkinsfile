@@ -4,7 +4,7 @@ pipeline {
   // Set global environment variables
   environment {
     // docker compose base test arguments
-    COMPOSE_TEST = '--file docker-compose.test.yml'
+    COMPOSE_TEST = '--file docker-compose.yml --project-name ${JOB_NAME}'
   }
 
   // Start pipeline stages
@@ -12,20 +12,19 @@ pipeline {
     stage('Build docker image') {
       steps {
         echo 'Building docker image..'
-        sh 'env'
-        sh 'docker-compose ${COMPOSE_TEST} up --build --detach'
+        sh 'docker-compose ${COMPOSE_TEST} build'
       }
     }
     stage('Rubocop') {
       steps {
         echo 'Running code analysis..'
-        sh 'docker-compose ${COMPOSE_TEST} exec app rubocop'
+        sh 'docker-compose ${COMPOSE_TEST} run --rm app rubocop'
       }
     }
     stage('RSpec') {
       steps {
         echo 'Running unit tests..'
-        sh 'docker-compose -${COMPOSE_TEST} exec app rspec'
+        sh 'docker-compose -${COMPOSE_TEST} run --rm app rspec'
       }
     }
     stage('Deploy to gemstash server') {
@@ -33,9 +32,9 @@ pipeline {
       steps {
         echo 'Deploying....'
         // build gem before deploy it to private gem server
-        sh 'docker-compose ${COMPOSE_TEST} exec app gem build authenticator'
+        sh 'docker-compose ${COMPOSE_TEST} run --rm app gem build ${JOB_NAME}'
         // deploy built gem to private gem server
-        sh 'docker-compose ${COMPOSE_TEST} exec app \
+        sh 'docker-compose ${COMPOSE_TEST} run --rm app \
               gem push --key gemstash --host ${GEMSTASH_URL}/private \
               `ls -Art pkg/ | tail -n 1`' // find last built gem file
       }
