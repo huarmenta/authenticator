@@ -12,6 +12,7 @@ pipeline {
     stage('Build docker image') {
       steps {
         echo 'Building docker image..'
+        sh 'env'
         sh 'docker-compose ${COMPOSE_TEST} up --build --detach'
       }
     }
