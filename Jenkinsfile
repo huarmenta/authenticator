@@ -12,7 +12,6 @@ pipeline {
     stage('Build docker image') {
       steps {
         echo 'Building docker image..'
-        sh 'docker system prune -fa && docker volume prune -f'
         sh 'docker-compose -f ${TEST_FILE} build'
       }
     }
