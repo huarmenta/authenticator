@@ -4,7 +4,7 @@ pipeline {
   // Set global environment variables
   environment {
     // docker compose base test arguments
-    COMPOSE_TEST = '--file docker-compose.test.yml --project-name ${JOB_NAME}'
+    COMPOSE_TEST = '--file docker-compose.test.yml'
   }
 
   // Start pipeline stages
@@ -33,7 +33,7 @@ pipeline {
       steps {
         echo 'Deploying....'
         // build gem before deploy it to private gem server
-        sh 'docker-compose ${COMPOSE_TEST} exec app gem build ${JOB_NAME}'
+        sh 'docker-compose ${COMPOSE_TEST} exec app gem build authenticator'
         // deploy built gem to private gem server
         sh 'docker-compose ${COMPOSE_TEST} exec app \
               gem push --key gemstash --host ${GEMSTASH_URL}/private \
