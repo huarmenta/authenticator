@@ -4,7 +4,7 @@ pipeline {
   // Set global environment variables
   environment {
     // docker compose base test arguments
-    COMPOSE_TEST = '--file docker-compose.test.yml'
+    TEST_FILE = 'docker-compose.test.yml'
   }
 
   // Start pipeline stages
@@ -12,19 +12,19 @@ pipeline {
     stage('Build docker image') {
       steps {
         echo 'Building docker image..'
-        sh 'docker-compose ${COMPOSE_TEST} build'
+        sh 'docker-compose -f ${TEST_FILE} -p ${JOB_NAME} build'
       }
     }
     stage('Rubocop') {
       steps {
         echo 'Running code analysis..'
-        sh 'docker-compose ${COMPOSE_TEST} run --rm app rubocop'
+        sh 'docker-compose -f ${TEST_FILE} -p ${JOB_NAME} run --rm app rubocop'
       }
     }
     stage('RSpec') {
       steps {
         echo 'Running unit tests..'
-        sh 'docker-compose ${COMPOSE_TEST} run --rm app rspec'
+        sh 'docker-compose -f ${TEST_FILE} -p ${JOB_NAME} run --rm app rspec'
       }
     }
     stage('Deploy to gemstash server') {
@@ -32,7 +32,7 @@ pipeline {
       steps {
         echo 'Deploying....'
         // build gem and deploy it to private gem server
-        sh 'docker-compose ${COMPOSE_TEST} run --rm app \
+        sh 'docker-compose -f ${TEST_FILE} -p ${JOB_NAME} run --rm app \
               gem build ${COMPOSE_PROJECT_NAME} && \
               gem push --key gemstash --host ${GEMSTASH_URL}/private \
               `ls -Art pkg/ | tail -n 1`' // find last built gem file
@@ -43,7 +43,7 @@ pipeline {
   post {
     always {
       // remove docker containers & clean Jenkins workspace
-      sh 'docker-compose ${COMPOSE_TEST} down --volumes'
+      sh 'docker-compose -f ${TEST_FILE} -p ${JOB_NAME} down --volumes'
       sh 'docker system prune -f'
       cleanWs()
     }
