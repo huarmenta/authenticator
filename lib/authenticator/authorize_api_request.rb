@@ -36,6 +36,7 @@ module Authenticator
     # decode authentication token
     def decoded_auth_token
       raise(JWTExceptionHandler::MissingToken, 'Missing token') if token.blank?
+
       @decoded_auth_token ||= JsonWebToken.decode(token)
     end
   end
