@@ -6,6 +6,8 @@ services:
     # persist db data with volume
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - backend-net
     environment:
       - POSTGRES_USER=condovive
       - POSTGRES_DB=authenticator
@@ -15,6 +17,8 @@ services:
       args:
         - BUNDLE_WITHOUT=production
         - RAILS_ENV=test
+    networks:
+      - backend-net
     depends_on:
       - db
     ports:
@@ -27,3 +31,7 @@ services:
 # persist data on volumes
 volumes:
   db-data:
+
+networks:
+  backend-net:
+    driver: bridge
