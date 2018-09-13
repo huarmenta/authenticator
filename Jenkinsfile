@@ -44,7 +44,7 @@ pipeline {
     always {
       // remove docker containers & clean Jenkins workspace
       sh 'docker-compose -f ${TEST_FILE} down --volumes'
-      sh 'docker system prune -f'
+      // sh 'docker system prune -f'
       cleanWs()
     }
   }
