@@ -47,6 +47,7 @@ module Authenticator
       if request.headers['Authorization'].blank?
         raise(JWTExceptionHandler::MissingToken, 'Missing token')
       end
+
       request.headers['Authorization']&.split&.last
     end
 
