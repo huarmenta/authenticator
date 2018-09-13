@@ -56,7 +56,7 @@ Style/GuardClause:
   Exclude:
     - '**/lib/authenticator/authenticable.rb'
 
-Style/MethodMissing:
+Style/MissingRespondToMissing:
   Exclude:
     - '**/lib/authenticator/authenticable.rb'
 
