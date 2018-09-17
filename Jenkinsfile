@@ -33,7 +33,7 @@ pipeline {
         echo 'Deploying....'
         // build gem and deploy it to private gem server
         sh 'docker-compose -f ${TEST_FILE} run --rm app \
-              gem build ${COMPOSE_PROJECT_NAME} && \
+              gem build authenticator && \
               gem push --key gemstash --host ${GEMSTASH_URL}/private \
               `ls -Art pkg/ | tail -n 1`' // find last built gem file
       }
