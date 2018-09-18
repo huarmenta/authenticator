@@ -7,7 +7,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
-      - backend-net
+      - authenticator-net
     environment:
       - POSTGRES_USER=condovive
       - POSTGRES_DB=authenticator
@@ -18,9 +18,9 @@ services:
         - BUNDLE_WITHOUT=
         - RAILS_ENV=development
     volumes:
-      - .:/app
+      - app-data:/app
     networks:
-      - backend-net
+      - authenticator-net
     depends_on:
       - db
     ports:
@@ -33,7 +33,8 @@ services:
 # persist data on volumes
 volumes:
   db-data:
+  app-data:
 
 networks:
-  backend-net:
+  authenticator-net:
     driver: bridge
