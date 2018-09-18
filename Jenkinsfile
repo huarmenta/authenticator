@@ -8,19 +8,19 @@ pipeline {
     stage('Build docker image') {
       steps {
         echo 'Building docker image..'
-        sh 'docker-compose up --build -d'
+        sh 'docker-compose build'
       }
     }
     stage('Rubocop') {
       steps {
         echo 'Running code analysis..'
-        sh 'docker-compose exec app rubocop'
+        sh 'docker-compose run --rm app rubocop'
       }
     }
     stage('RSpec') {
       steps {
         echo 'Running unit tests..'
-        sh 'docker-compose exec app rspec'
+        sh 'docker-compose run --rm app rspec'
       }
     }
     // stage('Deploy to gemstash server') {
