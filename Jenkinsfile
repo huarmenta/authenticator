@@ -2,13 +2,15 @@ pipeline {
   agent any // Run pipeline on any available agent
 
   // Set global environment variables
-
+  environment {
+    RAILS_ENV = 'test'
+  }
   // Start pipeline stages
   stages {
     stage('Build docker image') {
       steps {
         echo 'Building docker image..'
-        sh 'docker-compose build'
+        sh 'docker-compose build --build-arg UID=$(id -u)'
       }
     }
     stage('Rubocop') {
@@ -23,17 +25,17 @@ pipeline {
         sh 'docker-compose run --rm app rspec'
       }
     }
-    // stage('Deploy to gemstash server') {
-    //   when { branch 'master' }
-    //   steps {
-    //     echo 'Deploying....'
-    //     // build gem and deploy it to private gem server
-    //     sh 'docker-compose exec app \
-    //           gem build authenticator && \
-    //           gem push --key gemstash --host ${GEMSTASH_URL}/private \
-    //           `find ./ -name "*.gem" | sort | tail -1`' // last built gem file
-    //   }
-    // }
+    stage('Deploy to gemstash server') {
+      when { branch 'master' }
+      steps {
+        echo 'Deploying....'
+        // build gem and deploy it to private gem server
+        sh 'docker-compose run --rm app \
+              gem build authenticator && \
+              gem push --key gemstash --host ${GEMSTASH_URL}/private \
+              `find ./ -name "*.gem" | sort | tail -1`' // last built gem file
+      }
+    }
   }
 
   post {
