@@ -4,7 +4,7 @@ pipeline {
   // Set global environment variables
   environment {
     RAILS_ENV = 'test'
-    REPORTS_DIR = 'reports'
+    REPORTS_DIR = 'test-reports'
   }
   // Start pipeline stages
   stages {
@@ -46,7 +46,7 @@ pipeline {
   post {
     always {
       // collect junit test results
-      junit '**/${REPORTS_DIR}/*.xml'
+      junit "**/${REPORTS_DIR}/*.xml"
       // publish simplecov html report
       publishHTML (target: [
         allowMissing: false,
