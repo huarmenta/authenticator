@@ -24,7 +24,6 @@ services:
     env_file: .env
     environment:
       - DB_HOST=db
-    privileged: true
 
 volumes:
   db-data:
