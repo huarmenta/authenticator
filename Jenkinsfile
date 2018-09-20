@@ -5,6 +5,7 @@ pipeline {
   environment {
     RAILS_ENV = 'test'
     REPORTS_DIR = 'test-reports'
+    BUNDLE_WITHOUT = 'production'
   }
   // Start pipeline stages
   stages {
@@ -12,7 +13,10 @@ pipeline {
       steps {
         echo 'Building docker image..'
         // build with host user id
-        sh 'docker-compose build --build-arg UID=$(id -u)'
+        sh 'docker-compose build \
+              --build-arg UID=$(id -u) \
+              --build-arg RAILS_ENV=${RAILS_ENV} \
+              --build-arg BUNDLE_WITHOUT=${BUNDLE_WITHOUT}'
       }
     }
     stage('Rubocop') {
@@ -33,23 +37,21 @@ pipeline {
               --format progress'
       }
     }
-    // stage('Deploy to gemstash server') {
-    //   when { branch 'master' }
-    //   steps {
-    //     echo 'Deploying....'
-    //     // build gem and deploy it to private gem server
-    //     sh 'docker-compose run --rm app \
-    //           gem build authenticator && \
-    //           gem push --key gemstash --host ${GEMSTASH_URL}/private \
-    //           `find ./ -name "*.gem" | sort | tail -1`' // last built gem file
-    //   }
-    // }
+    stage('Deploy to gemstash server') {
+      when { branch 'master' }
+      steps {
+        echo 'Deploying....'
+        // build gem and deploy it to private gem server
+        sh 'docker-compose run --rm app \
+              gem build authenticator && \
+              gem push --key gemstash --host ${GEMSTASH_URL}/private \
+              `find ./ -name "*.gem" | sort | tail -1`' // last built gem file
+      }
+    }
   }
-
+  // Post build stages actions
   post {
     always {
-      // collect junit test results
-      junit "**/${REPORTS_DIR}/junit/*.xml"
       // publish rubocop html report results
       publishHTML (target: [
         allowMissing: false,
@@ -60,6 +62,8 @@ pipeline {
         reportName: 'Linter report',
         reportTitles: 'Rubocop report'
       ])
+      // collect junit test results
+      junit "**/${REPORTS_DIR}/junit/*.xml"
       // publish simplecov html report results
       publishHTML (target: [
         allowMissing: false,
@@ -67,12 +71,11 @@ pipeline {
         keepAll: true,
         reportDir: 'coverage',
         reportFiles: 'index.html',
-        reportName: 'Simple report',
-        reportTitles: 'Simplecov report'
+        reportName: 'SimpleCov report',
+        reportTitles: 'SimpleCov report'
       ])
-      // remove docker containers
+      // remove docker containers and its volumes
       sh 'docker-compose down --volumes'
-      sh 'docker system prune -f'
       // clean Jenkins workspace
       cleanWs()
     }
