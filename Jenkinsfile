@@ -18,7 +18,10 @@ pipeline {
     stage('Rubocop') {
       steps {
         echo 'Running code analysis..'
-        sh 'docker-compose run --rm app rubocop --format progress'
+        sh 'docker-compose run --rm app rubocop \
+              --format html \
+              --out rubocop/index.html \
+              --format progress'
       }
     }
     stage('RSpec') {
@@ -26,7 +29,7 @@ pipeline {
         echo 'Running unit tests..'
         sh 'docker-compose run --rm app rspec --profile 10 \
               --format RspecJunitFormatter \
-              --out ${REPORTS_DIR}/rspec.xml \
+              --out ${REPORTS_DIR}/junit/rspec.xml \
               --format progress'
       }
     }
@@ -46,15 +49,25 @@ pipeline {
   post {
     always {
       // collect junit test results
-      junit "**/${REPORTS_DIR}/*.xml"
-      // publish simplecov html report
+      junit "**/${REPORTS_DIR}/junit/*.xml"
+      // publish rubocop html report results
+      publishHTML (target: [
+        allowMissing: false,
+        alwaysLinkToLastBuild: false,
+        keepAll: true,
+        reportDir: 'rubocop',
+        reportFiles: 'index.html',
+        reportName: 'Linter report',
+        reportTitles: 'Rubocop report'
+      ])
+      // publish simplecov html report results
       publishHTML (target: [
         allowMissing: false,
         alwaysLinkToLastBuild: false,
         keepAll: true,
         reportDir: 'coverage',
         reportFiles: 'index.html',
-        reportName: 'RCov report',
+        reportName: 'Simple report',
         reportTitles: 'Simplecov report'
       ])
       // remove docker containers
