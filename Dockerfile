@@ -36,8 +36,10 @@ RUN apk add --update --no-cache \
     tzdata
 
 # Add user: condovive
+ARG UID=1000
+
 RUN addgroup -g 1000 -S condovive \
-    && adduser -u 1000 -S condovive -G condovive
+    && adduser -u ${UID} -S condovive -G condovive
 USER condovive
 
 # Copy app with gems from former build stage
