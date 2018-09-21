@@ -47,7 +47,7 @@ COPY --from=Builder /usr/local/bundle/ /usr/local/bundle/
 COPY --from=Builder --chown=condovive:condovive /app /app
 # set gem credentials
 RUN env \
-    mkdir -p ~/.gem \
+    && mkdir -p ~/.gem \
     && echo ":gemstash: $GEMSTASH_PUSH_KEY" >> ~/.gem/credentials \
     && chmod 0600 ~/.gem/credentials
 
