@@ -17,7 +17,8 @@ pipeline {
         sh 'docker-compose build \
               --build-arg UID=$(id -u) \
               --build-arg RAILS_ENV=${RAILS_ENV} \
-              --build-arg BUNDLE_WITHOUT=${BUNDLE_WITHOUT}'
+              --build-arg BUNDLE_WITHOUT=${BUNDLE_WITHOUT} \
+              --build-arg GEMSTASH_PUSH_KEY=${GEMSTASH_PUSH_KEY}'
       }
     }
     stage('Rubocop') {
