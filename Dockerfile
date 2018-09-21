@@ -45,6 +45,10 @@ USER condovive
 # Copy app with gems from former build stage
 COPY --from=Builder /usr/local/bundle/ /usr/local/bundle/
 COPY --from=Builder --chown=condovive:condovive /app /app
+# set gem credentials
+RUN mkdir -p ~/.gem \
+    && echo "---\n:gemstash: $GEMSTASH_PUSH_KEY" >> ~/.gem/credentials \
+    && chmod 0600 ~/.gem/credentials
 
 ARG RAILS_ENV=production
 ENV RAILS_ENV ${RAILS_ENV}

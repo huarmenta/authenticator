@@ -46,11 +46,7 @@ pipeline {
         // build gem and deploy it to private gem server
         sh 'docker-compose run --rm app gem build ${APP_NAME}'
         // load gemstash private server key & push gem to private server
-        sh 'docker-compose run --rm app \
-              mkdir -p ~/.gem \
-              && echo ":gemstash: $GEMSTASH_PUSH_KEY" >> ~/.gem/credentials \
-              && chmod 0600 ~/.gem/credentials \
-              && gem push \
+        sh 'docker-compose run --rm app gem push \
               --key gemstash \
               --host ${GEMSTASH_URL}/private \
               `find ./ -name "*.gem" | sort | tail -1`' // last built gem file
