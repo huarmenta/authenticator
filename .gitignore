@@ -9,6 +9,3 @@ vendor/
 
 # Ignore testing coverage files
 coverage
-
-# Ignore Gemfile.lock only on gems and engines
-Gemfile.lock
