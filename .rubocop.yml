@@ -8,7 +8,7 @@ Rails:
   Enabled: true
 
 AllCops:
-  TargetRubyVersion: 2.5.1
+  TargetRubyVersion: 2.4.4
   Exclude:
     # Modify excluded list if the requirement is forced to be improved or
     # refactored
