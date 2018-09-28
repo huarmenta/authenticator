@@ -24,7 +24,7 @@ pipeline {
     stage('Rubocop') {
       steps {
         echo 'Running code analysis..'
-        sh 'docker-compose run --rm app rubocop \
+        sh 'docker-compose run --rm app bundle exec rubocop \
               --format html \
               --out rubocop/index.html \
               --format progress'
@@ -33,7 +33,7 @@ pipeline {
     stage('RSpec') {
       steps {
         echo 'Running unit tests..'
-        sh 'docker-compose run --rm app rspec \
+        sh 'docker-compose run --rm app bundle exec rspec \
               --profile 10 \
               --format RspecJunitFormatter \
               --out ${REPORTS_DIR}/junit/rspec.xml \
@@ -45,7 +45,7 @@ pipeline {
       steps {
         echo 'Deploying....'
         // build gem and deploy it to private gem server
-        sh 'docker-compose run --rm app gem build ${APP_NAME}'
+        sh 'docker-compose run --rm app gem build ${APP_NAME}.gemspec'
         // load gemstash private server key & push gem to private server
         sh 'docker-compose run --rm app gem push \
               --key gemstash \
@@ -76,7 +76,7 @@ pipeline {
         keepAll: true,
         reportDir: 'coverage',
         reportFiles: 'index.html',
-        reportName: 'SimpleCov report',
+        reportName: 'Code coverage report',
         reportTitles: 'SimpleCov report'
       ])
       // remove docker containers and its volumes

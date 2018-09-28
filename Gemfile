@@ -12,9 +12,10 @@ gemspec
 # your gem to rubygems.org.
 
 # To use a debugger
-gem 'byebug', group: [:development, :test]
+# gem 'byebug', group: [:development, :test]
 
 group :development do
+  # Countries is a collection of all sorts of useful information for every country in the ISO 3166 standard. It contains info for the following standards ISO3166-1 (countries), ISO3166-2 (states/subdivisions), ISO4217 (currency) and E.164 (phone numbers).
   # RuboCop is a Ruby static code analyzer and code formatter.
   gem 'rubocop', require: false
   # RSpec-specific analysis for your projects, as an extension to RuboCop.
@@ -22,20 +23,11 @@ group :development do
 end
 
 group :development, :test do
-  # rspec-rails is a testing framework for Rails 3.x, 4.x and 5.x.
-  gem 'rspec-rails', '~> 3.8'
+  # This gem is a port of Perl's Data::Faker library that generates fake data.
+  gem 'faker', git: 'https://github.com/stympy/faker.git', branch: 'master'
 end
 
 group :test do
-  # Shoulda Matchers provides RSpec- and Minitest-compatible one-liners that 
-  # test common Rails functionality. These tests would otherwise be much 
-  # longer, more complex, and error-prone.
-  gem 'shoulda-matchers', '~> 3.1'
-  # Database Cleaner is a set of strategies for cleaning your database in Ruby.
-  gem 'database_cleaner'
   # SimpleCov is a code coverage analysis tool for Ruby.
   gem 'simplecov', require: false
-  # RSpec 2 & 3 results that your CI can read. Jenkins, Buildkite, CircleCI, 
-  # and probably more, too.
-  gem "rspec_junit_formatter"
 end

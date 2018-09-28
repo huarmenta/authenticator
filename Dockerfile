@@ -1,6 +1,6 @@
 # https://docs.docker.com/develop/develop-images/multistage-build/
 # Stage: Builder
-FROM ruby:2.5.1-alpine as Builder
+FROM ruby:2.4.4-alpine3.7 as Builder
 
 WORKDIR /app
 
@@ -9,8 +9,7 @@ ADD Gemfile* *.gemspec /app/
 ARG BUNDLE_WITHOUT=test:development
 ENV BUNDLE_WITHOUT ${BUNDLE_WITHOUT}
 
-RUN apk add --no-cache build-base git postgresql-dev \
-    # rails gems
+RUN apk add --update --no-cache build-base git postgresql-dev \
     && bundle config --global frozen 1 \
     # Parallel donwload and install jobs 
     && bundle install --jobs 4 --retry 3 \
@@ -23,7 +22,7 @@ RUN apk add --no-cache build-base git postgresql-dev \
 ADD . /app
 
 # Stage: Final
-FROM ruby:2.5.1-alpine
+FROM ruby:2.4.4-alpine3.7
 # Metadata
 LABEL maintainer='Hugo Armenta <hugo@condovive.com>' \
       name='Authenticator' \
@@ -45,6 +44,7 @@ USER condovive
 # Copy app with gems from former build stage
 COPY --from=Builder /usr/local/bundle/ /usr/local/bundle/
 COPY --from=Builder --chown=condovive:condovive /app /app
+
 # set gem credentials
 ARG GEMSTASH_PUSH_KEY
 ENV GEMSTASH_PUSH_KEY=$GEMSTASH_PUSH_KEY
@@ -57,9 +57,6 @@ ENV RAILS_ENV ${RAILS_ENV}
 ENV RAILS_LOG_TO_STDOUT true
 
 WORKDIR /app
-
-# Expose Puma port
-EXPOSE 3000
 
 # ENTRYPOINT runs everytime a container is prepared, make sure you have your
 # dependencies already configured so entrypoint executes correclty.
