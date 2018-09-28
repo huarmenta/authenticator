@@ -5,9 +5,9 @@ $:.push File.expand_path("lib", __dir__)
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "authenticator"
+  s.name        = "condovive_authenticator"
   # s.version     = Authenticator::VERSION
-  s.version     = '0.1.1'
+  s.version     = '0.1.0'
   s.authors     = ["Hugo Armenta"]
   s.email       = ["hugo@condovive.com"]
   s.homepage    = "https://bitbucket.org/condovive/authenticator.git"
@@ -16,17 +16,26 @@ Gem::Specification.new do |s|
   s.license     = "MIT"
 
   s.files = Dir[
-    "{app,config,db,lib}/**/*",
-    "spec/factories/**/*",
-    "spec/support/helpers/spec_helper.rb",
+    "{app,config,db,lib,spec}/**/*",
     "MIT-LICENSE",
     "Rakefile",
     "README.md"
   ]
 
-  s.add_dependency 'rails', '~> 5.2.0', '>= 5.2.0'
-
-  # app dependencies
+  s.add_dependency "rails", "~> 5.2.1", ">= 5.2.1"
   s.add_development_dependency 'pg', '~> 1.1'
+
+  # runtime dependencies
   s.add_dependency 'jwt', '~> 2.1'
+
+  # dev & test dependencies
+  s.add_development_dependency 'rubocop', '~> 0'
+  s.add_development_dependency 'rubocop-rspec', '~> 1'
+  s.add_development_dependency 'rspec-rails', '~> 3'
+  s.add_development_dependency 'database_cleaner', '~> 1'
+  s.add_development_dependency 'shoulda-matchers', '~> 3'
+  s.add_development_dependency 'factory_bot_rails', '~> 4'
+  s.add_development_dependency 'faker', '~> 1'
+  s.add_development_dependency 'simplecov', '~> 0'
+  s.add_development_dependency 'rspec_junit_formatter', '~> 0'
 end
