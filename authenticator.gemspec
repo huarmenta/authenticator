@@ -5,9 +5,9 @@ $:.push File.expand_path("lib", __dir__)
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "condovive_authenticator"
+  s.name        = "authenticator"
   # s.version     = Authenticator::VERSION
-  s.version     = '0.1.0'
+  s.version     = '0.1.1'
   s.authors     = ["Hugo Armenta"]
   s.email       = ["hugo@condovive.com"]
   s.homepage    = "https://bitbucket.org/condovive/authenticator.git"
