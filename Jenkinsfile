@@ -4,13 +4,15 @@ pipeline {
   // Set global environment variables
   environment {
     APP_NAME = 'authenticator'
-    RAILS_ENV = 'test'
-    REPORTS_DIR = 'test-reports'
-    BUNDLE_WITHOUT = 'production'
   }
   // Start pipeline stages
   stages {
-    stage('Build docker image') {
+    stage('Build docker test image') {
+      environment {
+        RAILS_ENV = 'test'
+        BUNDLE_WITHOUT = 'production'
+        GEMSTASH_PUSH_KEY = credentials('gemstash-push-key')
+      }
       steps {
         echo 'Building docker image..'
         // build with host user id
@@ -42,6 +44,9 @@ pipeline {
     }
     stage('Deploy to gemstash server') {
       when { branch 'master' }
+      environment {
+        GEMSTASH_URL = credentials('gemstash-url')
+      }
       steps {
         echo 'Deploying....'
         // build gem and deploy it to private gem server
