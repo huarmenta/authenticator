@@ -3,7 +3,7 @@
 module AuthSpecHelper
   # create user for authentication
   def auth_user
-    User.create
+    @auth_user ||= User.create
   end
 
   # return valid headers
