@@ -8,7 +8,7 @@ module Authenticator
     let(:decoded_token) { described_class.decode(token) }
 
     context 'when #encode is called' do
-      let(:test_token) { JWT.encode(decoded_token, '') }
+      let(:test_token) { described_class.encode(decoded_token) }
 
       it 'return encoded token' do
         expect(token).to eq(test_token)
