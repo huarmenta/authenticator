@@ -7,7 +7,7 @@ $:.push File.expand_path("lib", __dir__)
 Gem::Specification.new do |s|
   s.name        = "authenticator"
   # s.version     = Authenticator::VERSION
-  s.version     = '0.1.0'
+  s.version     = '0.1.1'
   s.authors     = ["Hugo Armenta"]
   s.email       = ["hugo@condovive.com"]
   s.homepage    = "https://bitbucket.org/condovive/authenticator.git"
