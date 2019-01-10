@@ -7,7 +7,7 @@ module Authenticator
     desc 'Creates an Authenticator initializer.'
 
     def copy_initializer
-      template 'authenticator.rb', 'config/initializers/authenticator.rb'
+      template('authenticator.rb', 'config/initializers/authenticator.rb')
     end
   end
 end

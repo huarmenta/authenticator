@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module Authenticator
-  # The AuthorizeApiRequest service gets the token from the authorization
-  # headers and attempts to decode it to return a valid user object
+  # Decodes token from authenticator headers & returns a user object.
   class AuthorizeApiRequest
     # :nocov:
     def self.call(*args)
@@ -10,9 +9,8 @@ module Authenticator
     end
     # :nocov:
 
-    # Service entry point - return valid user object
     def call
-      entity
+      entity # valid user object
     end
 
     private
@@ -25,15 +23,15 @@ module Authenticator
       @entity_class = entity_class
     end
 
+    # An entity is the authenticable object model
+    # For example:
+    #   User model or Admin model
     def entity
-      # check if entity is in the database and memoize entity object
       @entity ||= entity_class.find(decoded_auth_token['sub'])
-    # handle entity record not found
     rescue ActiveRecord::RecordNotFound => e
       raise(JWTExceptionHandler::InvalidToken, ("Invalid token #{e.message}"))
     end
 
-    # decode authentication token
     def decoded_auth_token
       raise(JWTExceptionHandler::MissingToken, 'Missing token') if token.blank?
 
