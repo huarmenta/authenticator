@@ -20,8 +20,8 @@ module Authenticator
   end
 
   # Default way to setup authenticator.
-  # Run `rails generate knock:install` to create a fresh initializer with all
-  # configuration values.
+  # Run `rails generate authenticator:install` to create a fresh initializer
+  # with all configuration values.
   # :nocov:
   def self.setup
     yield self
