@@ -5,8 +5,7 @@ require 'jwt'
 module Authenticator
   # Wraps JWT to provide token encoding and decoding methods for user auth.
   class JsonWebToken
-    # The encode method will be responsible for creating tokens based on a
-    # payload (user id) and expiration period
+    # Generates a token based on a payload (id) and an expiration period.
     def self.encode(payload, exp: Authenticator.token_lifetime.from_now)
       # set expiry time from now
       payload[:exp] = exp.to_i
@@ -18,8 +17,7 @@ module Authenticator
       )
     end
 
-    # The decode method accepts a token and attempts to decode it using the
-    # secret key used to sign tokens.
+    # Decodes JWT token and returns a hash
     def self.decode(token)
       # get payload; first index in decoded Array
       body = JWT.decode(
@@ -30,7 +28,6 @@ module Authenticator
       ).first
       HashWithIndifferentAccess.new(body)
     rescue JWT::ExpiredSignature, JWT::VerificationError => e
-      # rescue from expiry exception
       raise(JWTExceptionHandler::ExpiredSignature, e.message)
     end
   end
