@@ -3,9 +3,14 @@ log/*.log
 pkg/
 spec/dummy/log/*.log
 spec/dummy/tmp/
-vendor/
 
 .byebug_history
 
 # Ignore testing coverage files
 coverage
+
+# IDE configuration
+.idea
+
+# tags file
+tags

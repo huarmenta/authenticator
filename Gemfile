@@ -14,20 +14,39 @@ gemspec
 # To use a debugger
 gem 'byebug', group: [:development, :test]
 
-group :development do
-  # Countries is a collection of all sorts of useful information for every country in the ISO 3166 standard. It contains info for the following standards ISO3166-1 (countries), ISO3166-2 (states/subdivisions), ISO4217 (currency) and E.164 (phone numbers).
-  # RuboCop is a Ruby static code analyzer and code formatter.
-  gem 'rubocop', require: false
-  # RSpec-specific analysis for your projects, as an extension to RuboCop.
-  gem 'rubocop-rspec'
-end
-
 group :development, :test do
+  # rspec-rails brings the RSpec testing framework to Ruby on Rails as a
+  # drop-in alternative to its default testing framework, Minitest.
+  gem 'rspec-rails', '~> 3.8'
+  # factory_bot is a fixtures replacement with a straightforward definition
+  # syntax, support for multiple build strategies (saved instances, unsaved
+  # instances, attribute hashes, and stubbed objects), and support for
+  # multiple factories for the same class (user, admin_user, and so on),
+  # including factory inheritance.
+  gem 'factory_bot_rails'
   # This gem is a port of Perl's Data::Faker library that generates fake data.
   gem 'faker', git: 'https://github.com/stympy/faker.git', branch: 'master'
 end
 
+group :development do
+  # RuboCop is a Ruby static code analyzer and code formatter.
+  gem 'rubocop', require: false
+  # RSpec-specific analysis, as an extension to RuboCop.
+  gem 'rubocop-rspec'
+  # Performance optimization analysis, as an extension to RuboCop.
+  gem 'rubocop-performance'
+end
+
 group :test do
+  # Fuubar is an instafailing RSpec formatter that uses a progress bar instead
+  # of a string of letters and dots as feedback.
+  gem 'fuubar'
+  # Shoulda Matchers provides RSpec- and Minitest-compatible one-liners that
+  # test common Rails functionality.
+  gem 'shoulda-matchers'
   # SimpleCov is a code coverage analysis tool for Ruby.
   gem 'simplecov', require: false
+  # RSpec 2 & 3 results that your CI can read. Jenkins, Buildkite, CircleCI,
+  # and probably more, too.
+  gem 'rspec_junit_formatter'
 end

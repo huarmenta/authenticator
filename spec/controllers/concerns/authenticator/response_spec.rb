@@ -5,20 +5,24 @@ require 'rails_helper'
 module Authenticator
   RSpec.describe Response, type: :controller do
     controller(ApplicationController) do
-      # skip_before_action :authorize_request, only: :index
+      # skip_before_action :authenticate_user
+
       def index
         json_response(object: 'test')
       end
     end
-    before { get :index }
 
-    context 'with #json_response method' do
-      it 'responds with a json' do
-        expect(response.header['Content-Type']).to include('application/json')
+    context 'with #json_response' do
+      before { get :index }
+
+      it "responds with a 'Content-Type' => 'application/json' header" do
+        expect(
+          response.get_header('Content-Type')
+        ).to include('application/json')
       end
 
-      it 'includes an object key' do
-        expect(JSON.parse(response.body)).to have_key('object')
+      it "responds with an 'object'" do
+        expect(JSON.parse(response.body)).to eq('object' => 'test')
       end
 
       it { expect(response).to have_http_status(:ok) }

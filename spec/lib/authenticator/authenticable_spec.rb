@@ -14,33 +14,61 @@ module Authenticator
       def index; end
     end
 
-    context 'when token is valid' do
+    context 'with valid token' do
       before { allow(request).to receive(:headers).and_return(headers) }
 
-      it 'returns user after authorization' do
-        expect(controller.authenticate_for(User)).to eq(user)
+      describe '#authenticate_for' do
+        it 'returns user after authorization' do
+          expect(controller.authenticate_for(User)).to eq(user)
+        end
       end
 
-      it 'responds to #authenticate_user custom method' do
-        expect(controller.authenticate_user).to eq(nil)
+      describe '#authenticate_' do
+        before { controller.authenticate_user }
+
+        it 'sets a custom current_ method' do
+          expect(controller.respond_to?(:current_user)).to eq(true)
+        end
+
+        it 'returns current authorized object' do
+          expect(controller.current_user).to eq(user)
+        end
       end
 
-      it 'gets current user method' do
-        expect(controller.current_user).to eq(user)
+      describe '#current_' do
+        it 'returns current authorized object' do
+          expect(controller.current_user).to eq(user)
+        end
       end
     end
 
-    context 'when token is not passed' do
+    context 'with invalid token' do
       before do
-        allow(request).to receive(:headers).and_return(
-          'Authorization' => nil
-        )
+        allow(request).to receive(:headers).and_return('Authorization' => nil)
       end
 
-      it do
-        expect { controller.authenticate_for(User) }.to raise_error(
-          JWTExceptionHandler::MissingToken, /Missing token/
-        )
+      describe '#authenticate_for' do
+        it do
+          expect { controller.authenticate_for(User) }.to raise_error(
+            JWTExceptionHandler::MissingToken, /Missing token/
+          )
+        end
+      end
+
+      describe '#authenticate_' do
+        it do
+          expect { controller.authenticate_user }.to raise_error(
+            JWTExceptionHandler::MissingToken, /Missing token/
+          )
+        end
+      end
+
+      describe '#current_' do
+        it do
+          expect { controller.current_user }.to raise_error(
+            JWTExceptionHandler::MissingToken, /Missing token/
+          )
+        end
       end
     end
   end

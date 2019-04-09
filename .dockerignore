@@ -9,11 +9,11 @@ Dockerfile
 .dockerignore
 docker/
 
-bitbucket-pipelines.yml
-
 # App
 coverage/*
 log/*
+spec/dummy/log/*.log
+spec/dummy/tmp/
 storage/*
 tmp
 .byebug_history

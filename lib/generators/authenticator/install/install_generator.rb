@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Authenticator
-  class InstallGenerator < Rails::Generators::NamedBase
+  class InstallGenerator < Rails::Generators::NamedBase # :nodoc:
     source_root File.expand_path('templates', __dir__)
 
     desc 'Creates an Authenticator initializer.'
