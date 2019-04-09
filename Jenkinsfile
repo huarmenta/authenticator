@@ -1,26 +1,18 @@
 pipeline {
   agent any // Run pipeline on any available agent
 
-  // Set global environment variables
-  environment {
-    APP_NAME = 'authenticator'
-  }
   // Start pipeline stages
   stages {
     stage('Build docker test image') {
       environment {
         RAILS_ENV = 'test'
-        BUNDLE_WITHOUT = 'production'
-        GEMSTASH_PUSH_KEY = credentials('gemstash-push-key')
       }
       steps {
         echo 'Building docker image..'
         // build with host user id
         sh 'docker-compose build \
               --build-arg UID=$(id -u) \
-              --build-arg RAILS_ENV=${RAILS_ENV} \
-              --build-arg BUNDLE_WITHOUT=${BUNDLE_WITHOUT} \
-              --build-arg GEMSTASH_PUSH_KEY=${GEMSTASH_PUSH_KEY}'
+              --build-arg RAILS_ENV=${RAILS_ENV}'
       }
     }
     stage('Rubocop') {
@@ -29,7 +21,7 @@ pipeline {
         sh 'docker-compose run --rm app bundle exec rubocop \
               --format html \
               --out rubocop/index.html \
-              --format progress'
+              --format fuubar'
       }
     }
     stage('RSpec') {
@@ -39,23 +31,22 @@ pipeline {
               --profile 10 \
               --format RspecJunitFormatter \
               --out ${REPORTS_DIR}/junit/rspec.xml \
-              --format progress'
+              --format Fuubar'
       }
     }
     stage('Deploy to gemstash server') {
       when { branch 'master' }
       environment {
         GEMSTASH_URL = credentials('gemstash-url')
+        GEMSTASH_PUSH_KEY = credentials('gemstash-push-key')
       }
       steps {
         echo 'Deploying....'
         // build gem and deploy it to private gem server
-        sh 'docker-compose run --rm app gem build ${APP_NAME}.gemspec'
-        // load gemstash private server key & push gem to private server
-        sh 'docker-compose run --rm app gem push \
-              --key gemstash \
-              --host ${GEMSTASH_URL}/private \
-              `find ./ -name "*.gem" | sort | tail -1`' // last built gem file
+        sh 'docker-compose run \
+            -e GEMSTASH_URL=${GEMSTASH_URL} \
+            -e GEMSTASH_PUSH_KEY=${GEMSTASH_PUSH_KEY} \
+            --rm app ./deploy-gem.sh'
       }
     }
   }

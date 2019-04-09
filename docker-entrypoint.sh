@@ -7,7 +7,7 @@
 # setup the app containers and databases upon runnning.
 set -e
 
-: "${APP_PATH:=$PWD/spec/dummy}"
+: "${APP_PATH:=$PWD}"
 : "${APP_TEMP_PATH:="$APP_PATH/tmp"}"
 : "${APP_SETUP_LOCK:="$APP_TEMP_PATH/setup.lock"}"
 : "${APP_SETUP_WAIT:="5"}"
@@ -33,13 +33,13 @@ lock_setup
 bundle check || bundle install --jobs 20 --retry 5
 
 # 6: Check if the database exists, or setup the database if it doesn't, as it # is the case when the project runs for the first time.
-rake db:migrate db:seed 2>/dev/null || bundle exec rake db:setup db:seed
+bundle exec rails db:migrate db:seed 2>/dev/null || bundle exec rails db:setup
 
 # 7: 'Unlock' the setup process:
 unlock_setup
 
 # 8: Specify a default command, in case it wasn't issued.
-if [ -z "$1" ]; then set -- bundle exec puma -C config/puma.rb "$@"; fi
+if [ -z "$1" ]; then set -- bundle exec rails s "$@"; fi
 
 # 9: If the command to execute is 'rails server', then force it to write the
 # pid file into a non-shared container directory. Suddenly killing and removing

@@ -1,10 +1,19 @@
 # frozen_string_literal: true
 
 module Authenticator
+  # Adds custom authentication functionality for any model by calling the
+  # authenticate_for(entity_class) method.
   module Authenticable
+    # Creates a custom getter method to return an instance of the model based
+    # on the entity_class parameter and calls it.
+    # f.e. authenticate_for(User) where User is a Model of the application.
     def authenticate_for(entity_class)
-      getter_name = "current_#{entity_class.to_s.parameterize.underscore}"
-      define_current_entity_getter(entity_class, getter_name)
+      getter_name = "current_#{entity_class.to_s.underscore}"
+
+      unless respond_to?(getter_name)
+        define_current_entity_getter(entity_class, getter_name)
+      end
+
       public_send(getter_name)
     end
 
@@ -14,55 +23,36 @@ module Authenticator
       params[:token] || token_from_request_headers
     end
 
-    def method_missing(method, *args)
-      prefix, entity_name = method.to_s.split('_', 2)
-      case prefix
-      when 'authenticate'
-        unauthorized_entity(entity_name) unless authenticate_entity(
-          entity_name
-        )
-      # :nocov:
-      when 'current'
-        authenticate_entity(entity_name)
-      else
-        super
-      end
-      # :nocov:
+    def method_missing(method_name, *args)
+      entity_name = method_name.to_s.split('_').last
+
+      super unless authenticate_entity(entity_name)
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      super
     end
 
     def authenticate_entity(entity_name)
-      if token
-        entity_class = entity_name.camelize.constantize
-        send(:authenticate_for, entity_class)
-      end
+      send(:authenticate_for, entity_name.camelize.constantize) if token
     end
-
-    # :nocov:
-    def unauthorized_entity(_entity_name)
-      head(:unauthorized)
-    end
-    # :nocov:
 
     def token_from_request_headers
-      if request.headers['Authorization'].blank?
-        raise(JWTExceptionHandler::MissingToken, 'Missing token')
-      end
+      auth_token = request.headers['Authorization'].try(:split).try(:last)
 
-      request.headers['Authorization']&.split&.last
+      auth_token || raise(JWTExceptionHandler::MissingToken, 'Missing token')
     end
 
     def define_current_entity_getter(entity_class, getter_name)
-      unless respond_to?(getter_name) # check if method exists
-        memoization_var_name = "@_#{getter_name}"
-        self.class.send(:define_method, getter_name) do
-          unless instance_variable_defined?(memoization_var_name)
-            current = Authenticator::AuthorizeApiRequest.call(
-              token: token, entity_class: entity_class
-            )
-            instance_variable_set(memoization_var_name, current)
-          end
-          instance_variable_get(memoization_var_name)
+      memoization_var_name = "@_#{getter_name}"
+      self.class.send(:define_method, getter_name) do
+        unless instance_variable_defined?(memoization_var_name)
+          current = Authenticator::AuthorizeApiRequest.call(
+            token: token, entity_class: entity_class
+          )
+          instance_variable_set(memoization_var_name, current)
         end
+        instance_variable_get(memoization_var_name)
       end
     end
   end

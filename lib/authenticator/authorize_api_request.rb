@@ -3,11 +3,9 @@
 module Authenticator
   # Decodes token from authenticator headers & returns a user object.
   class AuthorizeApiRequest
-    # :nocov:
     def self.call(*args)
       new(*args).call
     end
-    # :nocov:
 
     def call
       entity # valid user object

@@ -2,63 +2,30 @@
 # inherit_from:
 #   - .rubocop_todo.yml
 # Extensions
-require: rubocop-rspec
+require:
+  - rubocop-rspec
+  - rubocop-performance
 
 Rails:
   Enabled: true
 
 AllCops:
-  TargetRubyVersion: 2.4.4
   Exclude:
-    # Modify excluded list if the requirement is forced to be improved or
-    # refactored
-    # bin directory
-    - '**/bin/**'
-    # db directory
-    - '**/db/**/*'
-    # lib generator templates
-    # - '**/lib/generators/**/templates/**.rb'
-    # lib tasks
-    - '**/lib/tasks/**'
-    # spec directory
-    - '**/spec/dummy/**/*'
-    - '**/spec/rails_helper.rb'
-    - '**/spec/spec_helper.rb'
-    # rakefile
-    - '**/Rakefile'
-    # Gemfile
-    - '**/*.gemspec'
-    - '**/Gemfile'
+    - 'Rakefile'
+    - 'db/**/*'
+    - 'config/**/*'
+    - 'bin/{bundle,rails,rake,setup,update}'
+    - !ruby/regexp /old_and_unused\.rb$/
+    - 'spec/spec_helper.rb'
+    - 'spec/dummy/**/*'
+
+Rails/UnknownEnv:
+  Exclude:
+    - 'spec/rails_helper.rb'
 
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*.rb'
-
-Metrics/MethodLength:
-  Max: 15
-
-RSpec/EmptyExampleGroup:
-  Enabled: false
-
-RSpec/ExampleLength:
-  Enabled: false
-
-RSpec/NestedGroups:
-  Max: 5
-
-Style/AsciiComments:
-  Enabled: false
-
-Style/Documentation:
-  Enabled: false
-
-Style/GuardClause:
-  Exclude:
-    - '**/lib/authenticator/authenticable.rb'
-
-Style/MissingRespondToMissing:
-  Exclude:
-    - '**/lib/authenticator/authenticable.rb'
 
 Style/SymbolArray:
   EnforcedStyle: brackets

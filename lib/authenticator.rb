@@ -6,7 +6,7 @@ require 'authenticator/json_web_token'
 require 'authenticator/authorize_api_request'
 require 'authenticator/jwt_exception_handler'
 
-module Authenticator
+module Authenticator # :nodoc:
   mattr_accessor :token_lifetime
   self.token_lifetime = 24.hours
 

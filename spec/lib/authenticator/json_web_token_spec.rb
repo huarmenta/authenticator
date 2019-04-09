@@ -7,7 +7,7 @@ module Authenticator
     let(:token) { auth_token }
     let(:decoded_token) { described_class.decode(token) }
 
-    context 'when #encode is called' do
+    describe '#encode' do
       let(:test_token) { described_class.encode(decoded_token) }
 
       it 'return encoded token' do
@@ -15,7 +15,7 @@ module Authenticator
       end
     end
 
-    context 'when #decode is called' do
+    describe '#decode' do
       context 'when token is valid' do
         it 'returns decoded token hash with sub key' do
           expect(decoded_token).to have_key(:sub)
