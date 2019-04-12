@@ -1,31 +1,3 @@
 # Inheritance
-# inherit_from:
-#   - .rubocop_todo.yml
-# Extensions
-require:
-  - rubocop-rspec
-  - rubocop-performance
-
-Rails:
-  Enabled: true
-
-AllCops:
-  Exclude:
-    - 'Rakefile'
-    - 'db/**/*'
-    - 'config/**/*'
-    - 'bin/{bundle,rails,rake,setup,update}'
-    - !ruby/regexp /old_and_unused\.rb$/
-    - 'spec/spec_helper.rb'
-    - 'spec/dummy/**/*'
-
-Rails/UnknownEnv:
-  Exclude:
-    - 'spec/rails_helper.rb'
-
-Metrics/BlockLength:
-  Exclude:
-    - 'spec/**/*.rb'
-
-Style/SymbolArray:
-  EnforcedStyle: brackets
+inherit_from:
+  - https://bitbucket.org/!api/2.0/snippets/condovive/4e558p/8ce0ef0f9bb1ea86dd7021fc102c959b253a74ea/files/.rubocop-engine.yml
