@@ -8,7 +8,7 @@ Authenticator.setup do |config|
   ## last forever.
   ##
   ## Default:
-  # config.token_lifetime = 1.day
+  # config.token_lifetime = 7.days
 
   ## Signature algorithm
   ## -------------------
@@ -24,7 +24,8 @@ Authenticator.setup do |config|
   ## Configure the key used to sign tokens.
   ##
   ## Default:
-  # config.token_secret_signature_key = -> {
-  #   Rails.application.credentials.secret_key_base
-  # }
+  # config.token_secret_signature_key = lambda do
+  #   ENV['JWT_SECRET_KEY'] || Rails.application.credentials.secret_key_base ||
+  #     ''
+  # end
 end
