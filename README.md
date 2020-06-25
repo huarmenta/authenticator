@@ -4,7 +4,7 @@ JWT Authentication Solution
 
 ## Usage
 
-```ruby
+```bash
 bundle exec rails authenticator:install
 ```
 
@@ -25,7 +25,7 @@ bundle install
 Or install it yourself as:
 
 ```bash
-gem install condovive_models
+gem install authenticator
 ```
 
 ## Contributing
