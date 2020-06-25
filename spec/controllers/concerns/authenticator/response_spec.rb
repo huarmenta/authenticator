@@ -5,8 +5,6 @@ require 'rails_helper'
 module Authenticator
   RSpec.describe Response, type: :controller do
     controller(ApplicationController) do
-      # skip_before_action :authenticate_user
-
       def index
         json_response(object: 'test')
       end
