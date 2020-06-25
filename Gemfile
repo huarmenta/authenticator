@@ -36,7 +36,9 @@ group :development do
   # RSpec-specific analysis, as an extension to RuboCop.
   gem 'rubocop-rspec'
   # Performance optimization analysis, as an extension to RuboCop.
-  gem 'rubocop-performance'
+  gem 'rubocop-performance', require: false
+  # A RuboCop extension focused on enforcing Rails best practices and coding conventions.
+  gem 'rubocop-rails', require: false
 end
 
 group :test do

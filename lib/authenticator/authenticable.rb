@@ -10,9 +10,7 @@ module Authenticator
     def authenticate_for(entity_class)
       getter_name = "current_#{entity_class.to_s.underscore}"
 
-      unless respond_to?(getter_name)
-        define_current_entity_getter(entity_class, getter_name)
-      end
+      define_current_entity_getter(entity_class, getter_name) unless respond_to?(getter_name)
 
       public_send(getter_name)
     end
@@ -20,7 +18,11 @@ module Authenticator
     private
 
     def token
-      params[:token] || token_from_request_headers
+      @token ||= token_from_params || token_from_request_headers || token_from_cookies
+
+      return @token if @token
+
+      raise(JWTExceptionHandler::MissingToken, 'Missing token')
     end
 
     def method_missing(method_name, *args)
@@ -34,13 +36,19 @@ module Authenticator
     end
 
     def authenticate_entity(entity_name)
-      send(:authenticate_for, entity_name.camelize.constantize) if token
+      send(:authenticate_for, entity_name.camelize.constantize)
+    end
+
+    def token_from_params
+      params[:jwt] || params['token']
     end
 
     def token_from_request_headers
-      auth_token = request.headers['Authorization'].try(:split).try(:last)
+      request.headers['Authorization'].try(:split).try(:last)
+    end
 
-      auth_token || raise(JWTExceptionHandler::MissingToken, 'Missing token')
+    def token_from_cookies
+      cookies.signed[:jwt]
     end
 
     def define_current_entity_getter(entity_class, getter_name)

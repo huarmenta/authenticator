@@ -1,3 +1,44 @@
 # Inheritance
-inherit_from:
-  - https://bitbucket.org/!api/2.0/snippets/condovive/4e558p/8ce0ef0f9bb1ea86dd7021fc102c959b253a74ea/files/.rubocop-engine.yml
+# inherit_from:
+#   - .rubocop_todo.yml
+# Extensions
+require:
+  - rubocop-rspec
+  - rubocop-performance
+  - rubocop-rails
+
+Rails:
+  Enabled: true
+
+AllCops:
+  Exclude:
+    - "config.ru"
+    - "Rakefile"
+    - "db/**/*"
+    - "config/**/*"
+    - "bin/{bundle,rails,rake,setup,update}"
+    - !ruby/regexp /old_and_unused\.rb$/
+    - "spec/spec_helper.rb"
+    - "spec/dummy/**/*"
+    - "vendor/**/*"
+# Lint/UselessAssignment:
+#   Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*.rb"
+
+# RSpec/BeforeAfterAll:
+#   Enabled: false
+
+# RSpec/ExampleLength:
+#   Enabled: false
+
+# RSpec/NestedGroups:
+#   Max: 4
+
+# Style/ClassAndModuleChildren:
+#   Enabled: false
+
+Style/SymbolArray:
+  EnforcedStyle: brackets

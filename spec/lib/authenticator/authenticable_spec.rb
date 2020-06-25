@@ -9,12 +9,13 @@ module Authenticator
     let(:headers) { valid_headers(token: token) }
 
     controller(ApplicationController) do
-      include Authenticator::Authenticable
+      include ActionController::Cookies
+      include Authenticator::Authenticable # rubocop: disable RSpec/DescribedClass
 
       def index; end
     end
 
-    context 'with valid token' do
+    context 'with valid header token' do
       before { allow(request).to receive(:headers).and_return(headers) }
 
       describe '#authenticate_for' do
@@ -42,7 +43,7 @@ module Authenticator
       end
     end
 
-    context 'with invalid token' do
+    context 'with invalid header token' do
       before do
         allow(request).to receive(:headers).and_return('Authorization' => nil)
       end
@@ -68,6 +69,37 @@ module Authenticator
           expect { controller.current_user }.to raise_error(
             JWTExceptionHandler::MissingToken, /Missing token/
           )
+        end
+      end
+    end
+
+    context 'with valid cookie token' do
+      before do
+        cookies.signed['jwt'] = { value: token, httponly: true }
+        allow(controller).to receive(:cookies).and_return(cookies)
+      end
+
+      describe '#authenticate_for' do
+        it 'returns user after authorization' do
+          expect(controller.authenticate_for(User)).to eq(user)
+        end
+      end
+
+      describe '#authenticate_' do
+        before { controller.authenticate_user }
+
+        it 'sets a custom current_ method' do
+          expect(controller.respond_to?(:current_user)).to eq(true)
+        end
+
+        it 'returns current authorized object' do
+          expect(controller.current_user).to eq(user)
+        end
+      end
+
+      describe '#current_' do
+        it 'returns current authorized object' do
+          expect(controller.current_user).to eq(user)
         end
       end
     end

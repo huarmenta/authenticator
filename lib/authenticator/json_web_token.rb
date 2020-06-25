@@ -6,7 +6,7 @@ module Authenticator
   # Wraps JWT to provide token encoding and decoding methods for user auth.
   class JsonWebToken
     # Generates a token based on a payload (id) and an expiration period.
-    def self.encode(payload, exp: Authenticator.token_lifetime.from_now)
+    def self.encode(payload, exp: Authenticator.token_lifetime)
       # set expiry time from now
       payload[:exp] = exp.to_i
       # sign token with application secret
