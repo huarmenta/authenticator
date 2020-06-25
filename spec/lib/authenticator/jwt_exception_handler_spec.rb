@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe JWTExceptionHandler, type: :controller do
   controller(ApplicationController) do
-    include JWTExceptionHandler
+    include JWTExceptionHandler # rubocop: disable RSpec/DescribedClass
 
     def test_missing_token
       raise JWTExceptionHandler::MissingToken

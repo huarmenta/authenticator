@@ -8,7 +8,7 @@ require 'authenticator/jwt_exception_handler'
 
 module Authenticator # :nodoc:
   mattr_accessor :token_lifetime
-  self.token_lifetime = 7.days
+  self.token_lifetime = Time.now.in_time_zone + 7.days
 
   mattr_accessor :token_signature_algorithm
   self.token_signature_algorithm = 'HS256'
