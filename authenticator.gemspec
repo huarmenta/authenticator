@@ -10,9 +10,9 @@ Gem::Specification.new do |s|
   s.name        = 'authenticator'
   s.version     = Authenticator::VERSION
   s.authors     = ['Hugo Armenta']
-  s.email       = ['hugo@condovive.com']
-  s.homepage    = 'https://bitbucket.org/condovive/authenticator.git'
-  s.summary     = 'Condovive Authenticator'
+  s.email       = ['h.alexarmenta@gmail.com']
+  s.homepage    = 'https://github.com/huarmenta/authenticator.git'
+  s.summary     = 'JWT Authenticator'
   s.description = 'Authentication solution powered by JWT'
   s.license     = 'MIT'
 

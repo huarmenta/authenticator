@@ -1,15 +1,14 @@
-version: '3'
+version: "3.7"
 
 services:
   db:
-    image: postgres:10-alpine
+    image: postgres:10.9-alpine
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
       - 5433:5432
     environment:
-      - POSTGRES_USER=condovive
-      - POSTGRES_DB=authenticator
+      - POSTGRES_USER=authenticator
   app:
     build:
       context: .
@@ -20,9 +19,11 @@ services:
       - .:/app
     depends_on:
       - db
+    ports:
+      - 3000:3000
+    entrypoint: "./docker-entrypoint.sh"
     environment:
       - DB_HOST=db
-      - COMPOSE_PROJECT_NAME=authenticator
 
 volumes:
   db-data:
